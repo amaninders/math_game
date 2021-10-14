@@ -64,6 +64,8 @@ class Game
 			
 			questions = current_game[:questions]
 
+			puts "\n ------ NEW TURN ------\n\n" if questions > 0
+
 			# set current player based on number of questions
 			current_player = (questions % 2 == 0 ? '1' : '2')
 			# set player key for updates
