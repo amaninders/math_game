@@ -1,6 +1,5 @@
 # require the modules
 require './Question'
-require './Player'
 
 class Game
 	
