@@ -1,10 +1,15 @@
+# require the modules
+require './Question'
+require './Player'
+
 class Game
 	
 	@records = [
-		{game:1, p1:0, p2:3},
-		{game:2, p1:2, p2:3},
-		{game:3, p1:1, p2:3},
+		{game:1, questions: 10, p1:0, p2:3},
+		{game:2, questions: 10, p1:2, p2:3},
+		{game:3, questions: 10, p1:1, p2:3},
 	]
+
 	@user_input = nil
 	
 	def self.greeting
@@ -48,6 +53,50 @@ class Game
 	# Method to start game
 	def self.start
 		
+		current_game = {
+			game: @records.length,
+			questions: 0,
+			p1: 0,
+			p2: 0
+		}
+		
+		begin
+			
+			questions = current_game[:questions]
+
+			# set current player based on number of questions
+			current_player = (questions % 2 == 0 ? '1' : '2')
+			# set player key for updates
+			player_key = "p#{current_player}"
+			
+			# ask question
+			question = Question.new
+			print "Player #{current_player}: " + question.ask
+
+			# change number of questions 
+			current_game[:questions] += 1
+
+			# get answer and provide result
+			answer = gets.chomp.to_i
+
+			if answer == question.sum
+				puts "Bingo!"
+			else
+				puts "Wrong!"
+				current_game[player_key.to_sym] += 1
+			end
+
+			# display player scores after result
+			puts "P1 #{current_game[:p1]}/3 vs P2 #{current_game[:p2]}/3"
+
+		end while (current_game[:p1] < 3 && current_game[:p2] < 3)
+
+		puts "\n ------ GAME OVER ------\n\n"
+
+		@records.push(current_game)
+
+		self.launch
+
 	end
 
 	# Method to end game
@@ -71,7 +120,8 @@ class Game
 		winner = obj[:p1] < obj[:p2] ? '1' : '2'
 		key = "p#{winner}"
 		score  = obj[key.to_sym];
-		"Game #{obj[:game]} => Player #{winner} wins with a score of #{score}/3"
+		questions = obj[:questions]
+		"Game #{obj[:game]} => Player #{winner} wins with a score of #{score}/3 after a round of #{questions} questions"
 	end
 
 end
