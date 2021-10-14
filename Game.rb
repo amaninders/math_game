@@ -1,5 +1,7 @@
 # require the modules
 require './Question'
+require 'timeout'
+require 'io/console'
 
 class Game
 	
@@ -70,15 +72,21 @@ class Game
 			# set player key for updates
 			player_key = "p#{current_player}"
 			
-			# ask question
-			question = Question.new
-			print "Player #{current_player}: " + question.ask
+			if self.ready? == true
+				# ask question
+				question = Question.new
+				print "Player #{current_player}: " + question.ask
 
-			# change number of questions 
-			current_game[:questions] += 1
-
-			# get answer and provide result
-			answer = gets.chomp.to_i
+				# change number of questions 
+				current_game[:questions] += 1	
+			end
+			
+			# get answer in 3 seconds and provide result
+			begin
+				answer = Timeout::timeout(3) { gets.chomp.to_i }
+			rescue Timeout::Error
+				answer = "no input"
+			end
 
 			if answer == question.sum
 				puts "Bingo!"
@@ -123,6 +131,12 @@ class Game
 		score  = obj[key.to_sym];
 		questions = obj[:questions]
 		"Game #{obj[:game]} => Player #{winner} wins with a score of #{score}/3 after a round of #{questions} questions"
+	end
+
+	def self.ready?
+			puts "You'll only have 3 seconds to answer, press any key when you're ready"
+			input = STDIN.getch
+			input.empty? ? false : true
 	end
 
 end
